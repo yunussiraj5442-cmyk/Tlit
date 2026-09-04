@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>My Friends</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+  background: #8B7A9E;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            background: linear-gradient(rgba(255, 192, 203, 0.7), rgba(255, 255, 255, 0.3));
+            padding: 10px;
+            color: #008cba;
+            border-radius: 10px;
+        }
+
+        button {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 55px;
+            height: 70px;
+            width: 503px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #005f73;
+            transform: scale(1.05);
+        }
+
+        h4 {
+            font-size: 34px;
+            color: #ffffffcc;
+        }
+
+        input {
+            margin: 50px;
+            width: 503px;
+            height: 48px;
+            margin-bottom: 30px;
+            border: solid;
+            border-radius: 17px;
+            padding: 10px;
+        }
+
+        #countdown {
+            font-size: 24px;
+            color: yellow;
+        }
+
+        #successPage {
+            display: none;
+            margin-top: 100px;
+        }
+
+        #successPage h1 {
+            font-size: 50px;
+            color: lightgreen;
+        }
+
+        #successPage p {
+            font-size: 24px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Game Page -->
+    <div id="gamePage">
+        <h1>Guess the answer</h1>
+        <h4>Who is my brother?</h4>
+        <input type="text" id="la" placeholder="ANSWER" />
+        <br />
+        <button onclick="ta()" id="submitBtn">SUBMIT</button>
+        <p id="ma"></p>
+        <p id="countdown"></p>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successPage">
+        <h1>🎉 You are a good brother!</h1>
+        <p>Thanks for playing ❤️</p>
+    </div>
+
+    <!-- Sounds -->
+    <audio id="successSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+    <audio id="errorSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+
+    <script>
+        let attempts = 0;
+        const maxAttempts = 3;
+        const cooldownTime = 70;
+        let countdownInterval;
+
+        const correctAnswers = ["yunus", "imran", "abdu"];
+
+        function ta() {
+            const input = document.getElementById("la").value.toLowerCase().trim();
+            const message = document.getElementById("ma");
+            const successSound = document.getElementById("successSound");
+            const errorSound = document.getElementById("errorSound");
+
+            attempts++;
+
+            if (correctAnswers.includes(input)) {
+                successSound.play();
+                document.getElementById("gamePage").style.display = "none";
+                document.getElementById("successPage").style.display = "block";
+            } else {
+                errorSound.play();
+
+                if (attempts < maxAttempts) {
+                    message.innerHTML = `❌ Not correct. Attempts left: ${maxAttempts - attempts}`;
+                } else {
+                    message.innerHTML = "⏳ Not correct. Wait 30 seconds to try again.";
+                    startCooldown();
+                }
+            }
+        }
+
+        function disableInput() {
+            document.getElementById("submitBtn").disabled = true;
+            document.getElementById("la").disabled = true;
+        }
+
+        function enableInput() {
+            document.getElementById("submitBtn").disabled = false;
+            document.getElementById("la").disabled = false;
+            document.getElementById("la").value = "";
+        }
+
+        function startCooldown() {
+            disableInput();
+            let remaining = cooldownTime;
+            document.getElementById("countdown").textContent = `⏳ Please wait ${remaining} seconds...`;
+
+            countdownInterval = setInterval(() => {
+                remaining--;
+                if (remaining > 0) {
+                    document.getElementById("countdown").textContent = `⏳ Please wait ${remaining} seconds...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    document.getElementById("countdown").textContent = "";
+                    document.getElementById("ma").innerHTML = "🔁 You can try again now.";
+                    attempts = 0;
+                    enableInput();
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
